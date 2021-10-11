@@ -1,14 +1,5 @@
 package csi
 
-import (
-	"bytes"
-	"fmt"
-)
-
-type SgrFlags [16]byte
-
-type SgrFlag int
-
 const (
 	ResetFlag      = 0 // 0
 	BoldFlag       = 1
@@ -102,112 +93,9 @@ const (
 	BgBrightMagentaFlag = 105
 	BgBrightCyanFlag    = 106
 	BgBrightWhiteFlag   = 107
+
+	FgColor8Flag  = 112 // 14
+	FgColor24Flag = 113
+	BgColor8Flag  = 114
+	BgColor24Flag = 115
 )
-
-func (sfs *SgrFlags) String() string {
-	sb := bytes.NewBufferString("[")
-	for i := 0; i < 16; i++ {
-		if i == 15 {
-			sb.WriteString(fmt.Sprintf("%08b]", sfs[i]))
-		} else {
-			sb.WriteString(fmt.Sprintf("%08b ", sfs[i]))
-		}
-	}
-	return sb.String()
-}
-
-func (sfs *SgrFlags) SetSgrFlag(flag SgrFlag) {
-	sfs[flag>>3] |= 1 << (flag & 7)
-}
-
-func (sfs *SgrFlags) UnsetSgrFlag(flag SgrFlag) {
-	sfs[flag>>3] &= ^(1 << (flag & 7))
-}
-
-func (sfs *SgrFlags) SetSgrFlags(flags ...SgrFlag) {
-	for _, flag := range flags {
-		sfs[flag>>3] |= 1 << (flag & 7)
-	}
-}
-
-func (sfs *SgrFlags) UnsetSgrFlags(flags ...SgrFlag) {
-	for _, flag := range flags {
-		sfs[flag>>3] &= ^(1 << (flag & 7))
-	}
-}
-
-func (sfs *SgrFlags) UnsetAll() {
-	*sfs = SgrFlags{}
-}
-
-func (sfs *SgrFlags) TestSgrFlag(flag SgrFlag) bool {
-	return (sfs[flag>>3] & (1 << (flag & 7))) != 0
-}
-
-func (sfs *SgrFlags) TestSgrFlagUnset(flag SgrFlag) bool {
-	return (sfs[flag>>3] & (1 << (flag & 7))) == 0
-}
-
-func (sfs *SgrFlags) TestAllSgrFlags(flags ...SgrFlag) bool {
-	for _, flag := range flags {
-		if (sfs[flag>>3] & (1 << (flag & 7))) == 0 {
-			return false
-		}
-	}
-	return true
-}
-
-func (sfs *SgrFlags) TestAllSgrFlagsUnset(flags ...SgrFlag) bool {
-	for _, flag := range flags {
-		if (sfs[flag>>3] & (1 << (flag & 7))) != 0 {
-			return false
-		}
-	}
-	return true
-}
-
-func (sfs *SgrFlags) TestHasSgrFlags(flags ...SgrFlag) bool {
-	for _, flag := range flags {
-		if (sfs[flag>>3] & (1 << (flag & 7))) != 0 {
-			return true
-		}
-	}
-	return false
-}
-
-func (sfs *SgrFlags) TestHasSgrFlagsUnset(flags ...SgrFlag) bool {
-	for _, flag := range flags {
-		if (sfs[flag>>3] & (1 << (flag & 7))) == 0 {
-			return true
-		}
-	}
-	return false
-}
-
-func (sfs *SgrFlags) clearFgColorFlags() {
-	sfs[3] &= 0b00111111
-	sfs[4] = 0
-}
-
-func (sfs *SgrFlags) clearBgColorFlags() {
-	sfs[5] = 0
-	sfs[6] &= 0b11111100
-}
-
-func (sfs *SgrFlags) SetFgColor(fgColor SgrFlag) {
-	sfs.clearFgColorFlags()
-	sfs.SetSgrFlag(fgColor)
-}
-
-func (sfs *SgrFlags) SetBgColor(bgColor SgrFlag) {
-	sfs.clearBgColorFlags()
-	sfs.SetSgrFlag(bgColor)
-}
-
-func (sfs *SgrFlags) SetCustomFgColorFlag() {
-	sfs.SetSgrFlag(CustomFgColorFlag)
-}
-
-func (sfs *SgrFlags) SetCustomBgColorFlag() {
-	sfs.SetSgrFlag(CustomBgColorFlag)
-}
