@@ -94,8 +94,8 @@ const (
 	BgBrightCyanFlag    = 106
 	BgBrightWhiteFlag   = 107
 
-	FgColor8Flag  = 112 // 14
-	FgColor24Flag = 113
-	BgColor8Flag  = 114
-	BgColor24Flag = 115
+	FgColor256Flag = 112 // 14
+	FgColorRGBFlag = 113
+	BgColor256Flag = 114
+	BgColorRGBFlag = 115
 )

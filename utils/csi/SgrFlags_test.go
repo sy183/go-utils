@@ -6,9 +6,11 @@ import (
 )
 
 func TestSgrFlags(t *testing.T) {
-	sfs := &SgrFlags{}
-	sfs.SetSgrFlags(BoldFlag, ItalicFlag, FgBlackFlag, BgWhiteFlag)
-	fmt.Println(sfs)
-	sfs.clearFgColorFlags()
-	fmt.Println(sfs)
+	sc := NewSgrCsi()
+	sc.srgFlags.SetFlags(BoldFlag, ItalicFlag, BgWhiteFlag)
+	sc.fgColorRGB = ColorRGB{R: 134, G: 90, B: 234}
+	sc.fgColor256 = 189
+	fmt.Println(sc.String())
+	fgColor := sc.getFgColor()
+	fmt.Println(fgColor.fgString())
 }
